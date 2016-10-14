@@ -2,6 +2,11 @@ var restify = require('restify');
 var server = restify.createServer();    //Create server
 var setupController = require('./controllers/setup-controller');
 var routes = require('./controllers/routes');
+var mongoose = require('mongoose');
+var mongooseConnection = require('./config/mongoose-connection');
+
+//Connect to database
+mongoose.connect(mongooseConnection.getMongoConnection());
 
 //Set up parsers on server
 setupController(server, restify);
