@@ -70,19 +70,10 @@ module.exports = function(server) {
     });
 
     //[POST] REQUEST TO POST A NEW COMMENT
-    server.get('/api/events/:id', function(req, res, next) {
+    server.post('/api/events/:id/comment', function(req, res, next) {
         var comment = req.params.comment;
         var userId = req.params.user_id;
         //Reterieve particular event from database
-        Event.findOneAndUpdate({ _id : req.params.id }, function(err, doc) {
-            //Check if error while reteriving the database
-            if(err) {
-                //If error return failure
-                console.log(err);
-                helper.failure(res, next, 'Error while adding comment', 404);
-            } else {
-
-            }
-        });
+        helper.success(res, next, "" + comment + userId);
     });
 }
