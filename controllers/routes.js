@@ -48,9 +48,9 @@ module.exports = function(server) {
     });
 
     //[GET] REQUEST TO GET DATA FOR A PARTICULAR EVENT
-    server.post('/api/events/:id', function(req, res, next){
+    server.get('/api/events/:id', function(req, res, next){
         //GET data of a particular event
-        Event.findOne({ "_id" : req.params.id }, function(err, doc) {
+        Event.findById(req.params.id, function(err, doc) {
             //Check if error while reteriving the data
             if(err) {
                 //If error then return failure
@@ -67,5 +67,22 @@ module.exports = function(server) {
                 }
             }
         })
+    });
+
+    //[POST] REQUEST TO POST A NEW COMMENT
+    server.get('/api/events/:id', function(req, res, next) {
+        var comment = req.params.comment;
+        var userId = req.params.user_id;
+        //Reterieve particular event from database
+        Event.findOneAndUpdate({ _id : req.params.id }, function(err, doc) {
+            //Check if error while reteriving the database
+            if(err) {
+                //If error return failure
+                console.log(err);
+                helper.failure(res, next, 'Error while adding comment', 404);
+            } else {
+
+            }
+        });
     });
 }
