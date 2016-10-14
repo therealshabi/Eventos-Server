@@ -9,7 +9,7 @@ module.exports = function(server) {
     //[GET, POST, PUT, DELETE] routes defined here
 
     //[GET] REQUEST TO RESTURN ALL EVENTS
-    server.get('/events', function(req, res, next) {
+    server.get('/api/events', function(req, res, next) {
         //Get all the events from database and return
         Event.find({}, function(err, docs) {
             //Check for error while reteriving data
@@ -24,7 +24,7 @@ module.exports = function(server) {
     });
 
     //[POST] REQUEST TO ADD NEW EVENTS
-    server.post('/events', function(req, res, next) {
+    server.post('/api/events', function(req, res, next) {
         //Create a new event and get the data from the request
         var newEvent = new Event({
             title : req.params.title,
@@ -45,5 +45,27 @@ module.exports = function(server) {
                 helper.success(res, next, newEvent);
             }
         });
-    })
+    });
+
+    //[GET] REQUEST TO GET DATA FOR A PARTICULAR EVENT
+    server.post('/api/events/:id', function(req, res, next){
+        //GET data of a particular event
+        Event.findOne({ "_id" : req.params.id }, function(err, doc) {
+            //Check if error while reteriving the data
+            if(err) {
+                //If error then return failure
+                console.log(err);
+                helper.failure(res, next, 'Error while reteriving data', 404);
+            } else {
+                //Check if event exists
+                if(doc === null) {
+                    //Return failure if event not found
+                    helper.failure(res, next, 'No event with specified id.', 404);
+                } else {
+                    //Return the event
+                    helper.success(res, next, doc);
+                }
+            }
+        })
+    });
 }
