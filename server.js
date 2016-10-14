@@ -1,14 +1,13 @@
 var restify = require('restify');
-var server = restify.createServer();
+var server = restify.createServer();    //Create server
+var setupController = require('./controllers/setup-controller');
+var routes = require('./controllers/routes');
 
-server.get('/root/:id', function(req, res, next){
-    var id = req.params.id;
-    res.end("OK" + id);
-})
+//Set up parsers on server
+setupController(server, restify);
 
-server.post('/root', function(req, res, next){
-    res.end("ok" + req.params.);
-})
+//Set routes on server
+routes(server);
 
 server.listen(8000, function(){
     console.log("Hello");
