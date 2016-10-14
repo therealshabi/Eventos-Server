@@ -6,6 +6,7 @@ var mongoose = require('mongoose');
 var mongooseConnection = require('./config/mongoose-connection');
 
 //Connect to database
+mongoose.Promise = global.Promise;
 mongoose.connect(mongooseConnection.getMongoConnection());
 
 //Set up parsers on server
