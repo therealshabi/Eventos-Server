@@ -18,6 +18,7 @@ module.exports = function(server) {
                 helper.failure(res, next, 'Error while getting events.', 404);
             } else {
                 //Return the data
+                console.log("Serving events request to : " + req.connection.remoteAddress);
                 helper.success(res, next, docs);
             }
         });
@@ -31,7 +32,8 @@ module.exports = function(server) {
             description : req.params.description,
             date : new Date(),
             venue : req.params.venue,
-            requirements : req.params.requirements
+            requirements : req.params.requirements,
+            verified : false
         });
         newEvent.save(function(err) {
             //Check if error inserting the data
@@ -70,10 +72,46 @@ module.exports = function(server) {
     });
 
     //[POST] REQUEST TO POST A NEW COMMENT
-    server.post('/api/events/:id/comment', function(req, res, next) {
+    server.post('/api/events/comment/:id', function(req, res, next) {
         var comment = req.params.comment;
         var userId = req.params.user_id;
-        //Reterieve particular event from database
-        helper.success(res, next, "" + comment + userId);
+        //Check if fields are not empty
+        if(comment == null || userId == null){
+            helper.failure(res, next, 'Comment/Id cannot be empty', 404);
+        } else {
+            //Reterieve particular event from database
+            Event.findByIdAndUpdate(req.params.id, { $push : { "comments" : { "user_id" : userId, "comment" : comment} } }, function(err, doc) {
+                //Check if error while reteriving the database
+                if(err) {
+                    //Return failure if error while updatin
+                    helper.failure(res, next, 'Error while adding comment', 404);
+                } else {
+                    //Return success on changes being made
+                    helper.success(res, next, 'Comment added successfuly');
+                }
+            });
+        }
+    });
+
+    //[POST] REQUEST TO RATE AND EVENT
+    server.post('/api/events/rating/:id', function(req, res, next) {
+        var rating = req.params.rating;
+        var userId = req.params.user_id;
+        //Check if fields are not empty
+        if(rating == null || userId == null) {
+            helper.failure(res, next, 'Rating/Id cannot be empty', 404);
+        } else {
+            //Reterieve particular event from database
+            Event.findByIdAndUpdate(req.params.id, { $push : { "rating" : { "user_id" : userId, "rating" : rating} } }, function(err, doc) {
+                //Check if error while reteriving the database
+                if(err) {
+                    //Return failure if error while updatin
+                    helper.failure(res, next, 'Error while rating event.', 404);
+                } else {
+                    //Return success on changes being made
+                    helper.success(res, next, 'Event rated successfuly');
+                }
+            });
+        }
     });
 }

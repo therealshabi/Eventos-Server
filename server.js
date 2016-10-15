@@ -15,6 +15,6 @@ setupController(server, restify);
 //Set routes on server
 routes(server);
 
-server.listen(8000, function(){
+server.listen(8000, '192.168.43.55', function(){
     console.log("Hello");
 });

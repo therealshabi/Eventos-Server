@@ -9,8 +9,11 @@ var eventSchema = new Schema({
     date : Date,
     venue : String,
     requirements : [],
-    verified : String,
-    comments : []
+    verified : Boolean,
+    comments : [],
+    rating : [],
+    avatar_id : Number,
+    contacts : []
 });
 
 var Event = mongoose.model('events', eventSchema);
