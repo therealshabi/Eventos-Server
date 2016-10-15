@@ -33,7 +33,8 @@ module.exports = function(server) {
             date : new Date(),
             venue : req.params.venue,
             requirements : req.params.requirements,
-            verified : false
+            verified : false,
+            people_interested : 0
         });
         newEvent.save(function(err) {
             //Check if error inserting the data
@@ -101,7 +102,7 @@ module.exports = function(server) {
         if(rating == null || userId == null) {
             helper.failure(res, next, 'Rating/Id cannot be empty', 404);
         } else {
-            //Reterieve particular event from database
+            //Retrieve particular event from database
             Event.findByIdAndUpdate(req.params.id, { $push : { "rating" : { "user_id" : userId, "rating" : rating} } }, function(err, doc) {
                 //Check if error while reteriving the database
                 if(err) {
@@ -110,6 +111,28 @@ module.exports = function(server) {
                 } else {
                     //Return success on changes being made
                     helper.success(res, next, 'Event rated successfuly');
+                }
+            });
+        }
+    });
+
+    //[POST] REQUEST TO INCREASE/DECREASE THE NUMBER OF PEOPLE INTERESTED
+    server.post('/api/events/interested/:id', function(req, res, next) {
+        var increaseOrDecrease = req.params.increase_decrease;
+        //Check if fields are not empty
+        if(increaseOrDecrease == null) {
+            helper.failure(res, next, 'Increase/Decrease should be provided', 404);
+        } else {
+            //Get increase or decrease
+            if(increaseOrDecrease == 1) increaseOrDecrease = 1; else increaseOrDecrease = -1;
+            ////Retrieve particular event from database
+            Event.findByIdAndUpdate(req.params.id, { $inc : { people_interested : increaseOrDecrease } }, function(err, doc) {
+                //Check if there is no error while updating document
+                if(err) {
+                    helper.failure(res, next, 'Error while updating event interests', 404);
+                } else {
+                    //Return success on changes being made
+                    helper.success(res, next, 'Interested noted successfuly');
                 }
             });
         }

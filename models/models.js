@@ -13,7 +13,8 @@ var eventSchema = new Schema({
     comments : [],
     rating : [],
     avatar_id : Number,
-    contacts : []
+    contacts : [],
+    people_interested : Number
 });
 
 var Event = mongoose.model('events', eventSchema);
