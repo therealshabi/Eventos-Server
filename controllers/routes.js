@@ -11,7 +11,7 @@ module.exports = function(server) {
     //[GET] REQUEST TO RESTURN ALL EVENTS
     server.get('/api/events', function(req, res, next) {
         //Get all the events from database and return
-        Event.find({}, function(err, docs) {
+        Event.find({}, null, {sort : {date : -1} }, function(err, docs) {
             //Check for error while reteriving data
             if(err) {
                 //If error then return failure
@@ -34,8 +34,13 @@ module.exports = function(server) {
             venue : req.params.venue,
             requirements : req.params.requirements,
             verified : false,
-            people_interested : 0
+            people_interested : 0,
+            image : req.params.image,
+            avatar_id : req.params.avatar_id,
+            event_links : req.params.event_links,
+            event_contacts : req.params.event_contacts
         });
+        
         newEvent.save(function(err) {
             //Check if error inserting the data
             if(err) {
@@ -44,7 +49,7 @@ module.exports = function(server) {
                 helper.failure(res, next, 'Error inserting data', 404);
             } else {
                 //Return the event data if successful
-                console.log("New event submitted");
+                console.log("New event submitted from : " + req.connection.remoteAddress);
                 helper.success(res, next, newEvent);
             }
         });
@@ -137,4 +142,8 @@ module.exports = function(server) {
             });
         }
     });
+
+    //[PUT] REQUEST TO EDIT THE SUBMITTED EVENT
+
+    //[DELETE] REQUEST TO DELETE AN EVENT
 }

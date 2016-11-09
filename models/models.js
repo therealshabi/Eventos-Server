@@ -8,13 +8,16 @@ var eventSchema = new Schema({
     description : String,
     date : Date,
     venue : String,
-    requirements : [],
+    requirements : String,
     verified : Boolean,
     comments : [],
     rating : [],
     avatar_id : Number,
-    contacts : [],
-    people_interested : Number
+    event_contacts : [],
+    people_interested : Number,
+    image : String,
+    attendies : [],
+    event_links : []
 });
 
 var Event = mongoose.model('events', eventSchema);
