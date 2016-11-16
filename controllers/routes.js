@@ -4,6 +4,7 @@ var helper = require('../config/helper');
 
 //Get the events from models
 var Event = models.Event;
+var User = models.User;
 
 module.exports = function(server) {
     //[GET, POST, PUT, DELETE] routes defined here
@@ -40,7 +41,7 @@ module.exports = function(server) {
             event_links : req.params.event_links,
             event_contacts : req.params.event_contacts
         });
-        
+
         newEvent.save(function(err) {
             //Check if error inserting the data
             if(err) {
@@ -141,6 +142,41 @@ module.exports = function(server) {
                 }
             });
         }
+    });
+
+    //[POST] REQUST TO SIGNUP
+    server.post('/api/signup', function(req, res, next) {
+        var email = req.params.email;
+        var password = req.params.password;
+        var phone = req.params.phone;
+
+        User.count({'email':email}, function(err, docs){
+            if(err) {
+                //If error then return failure
+                helper.failure(res, next, 'Error in request', 404);
+            } else {
+                //User already exists
+                if(docs) {
+                    helper.failure(res, next, 'Email already exists', 200);
+                } else {
+                    //Sign up the user
+                    var user = new User({
+                        email : req.params.email,
+                        password : req.params.password,
+                        phone : req.params.phone
+                    });
+
+                    user.save(function(err){
+                        //if error notify
+                        if(err) {
+                            helper.failure(res, next, 'Unable to signup', 404);
+                        } else {
+                            helper.success(res, next, 'Signed up successfuly');
+                        }
+                    });
+                }
+            }
+        });
     });
 
     //[PUT] REQUEST TO EDIT THE SUBMITTED EVENT

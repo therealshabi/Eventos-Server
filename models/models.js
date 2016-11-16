@@ -20,8 +20,16 @@ var eventSchema = new Schema({
     event_links : []
 });
 
+var userSchema = new Schema({
+    email : String,
+    password : String,
+    phone : String
+});
+
 var Event = mongoose.model('events', eventSchema);
+var User = mongoose.model('user', userSchema);
 
 module.exports = {
-    Event: Event
+    Event: Event,
+    User : User
 };
