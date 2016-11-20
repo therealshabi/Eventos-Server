@@ -179,6 +179,34 @@ module.exports = function(server) {
         });
     });
 
+    //[POST] REQUEST TO LOGIN
+    server.post('/api/login', function(req, res, next){
+        var email = req.params.email;
+        var password = req.params.password;
+
+        User.count({'email':email}, function(err, docs){
+            if(err) {
+                //Return error
+                helper.failure(res, next, 'Error in request', 404);
+            } else {
+                //User already exists check for credentials
+                if(docs) {
+                    //If user exists check for password
+                    User.find({'email':email}, function(err, docs){
+                        //Match password
+                        if(docs[0].password == password) {
+                            helper.success(res, next, 'Signed in successfuly');
+                        } else {
+                            helper.failure(res, next, 'Wrong username/password', 200);
+                        }
+                    });
+                } else {
+                    helper.failure(res, next, 'Wrong username/password', 200);
+                }
+            }
+        });
+    })
+
     //[PUT] REQUEST TO EDIT THE SUBMITTED EVENT
 
     //[DELETE] REQUEST TO DELETE AN EVENT
