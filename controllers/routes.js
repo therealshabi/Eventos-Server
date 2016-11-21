@@ -39,7 +39,8 @@ module.exports = function(server) {
             image : req.params.image,
             avatar_id : req.params.avatar_id,
             event_links : req.params.event_links,
-            event_contacts : req.params.event_contacts
+            event_contacts : req.params.event_contacts,
+            submitted_by : req.params.submitted_by
         });
 
         newEvent.save(function(err) {
