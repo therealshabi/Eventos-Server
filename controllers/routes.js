@@ -152,6 +152,7 @@ module.exports = function(server) {
         var email = req.params.email;
         var password = req.params.password;
         var phone = req.params.phone;
+        var full_name = req.params.full_name;
 
         User.count({'email':email}, function(err, docs){
             if(err) {
@@ -166,7 +167,8 @@ module.exports = function(server) {
                     var user = new User({
                         email : req.params.email,
                         password : req.params.password,
-                        phone : req.params.phone
+                        phone : req.params.phone,
+                        full_name : full_name
                     });
 
                     user.save(function(err){
@@ -209,6 +211,23 @@ module.exports = function(server) {
             }
         });
     })
+
+    //[POST] REQUEST FOR GETTING SUBMITTED EVENTS
+    server.post('/api/submitted-events', function(req, res, next) {
+        //Get all the events from database and return
+        var submitted_by = req.params.submitted_by;
+        Event.find({"submitted_by" : submitted_by}, null, {sort : {date : -1} }, function(err, docs) {
+            //Check for error while reteriving data
+            if(err) {
+                //If error then return failure
+                helper.failure(res, next, 'Error while getting events.', 404);
+            } else {
+                //Return the data
+                console.log("Serving events request to : " + req.connection.remoteAddress);
+                helper.success(res, next, docs);
+            }
+        });
+    });
 
     //[PUT] REQUEST TO EDIT THE SUBMITTED EVENT
 
