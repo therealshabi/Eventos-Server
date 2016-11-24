@@ -200,7 +200,8 @@ module.exports = function(server) {
                     User.find({'email':email}, function(err, docs){
                         //Match password
                         if(docs[0].password == password) {
-                            helper.success(res, next, 'Signed in successfuly');
+                            helper.success(res, next, docs);
+                            console.log(docs)
                         } else {
                             helper.failure(res, next, 'Wrong username/password', 200);
                         }
@@ -225,6 +226,56 @@ module.exports = function(server) {
                 //Return the data
                 console.log("Serving events request to : " + req.connection.remoteAddress);
                 helper.success(res, next, docs);
+            }
+        });
+    });
+
+    //[PUT] REQUEST TO UPDATE THE USER INFORMATION
+    server.put('api/user/update', function(req, res, next){
+        var email = req.params.email;
+        var password = req.params.password;
+        var full_name = req.params.full_name;
+        var phone = req.params.phone;
+
+        //Create new user
+        var user = new User({
+            email : email,
+            password : password,
+            full_name : full_name,
+            phone : phone
+        });
+
+        //Check if email and password match
+        User.count({'email':email}, function(err, docs){
+            if(err) {
+                //Return error
+                helper.failure(res, next, 'Error in request', 404);
+            } else {
+                //User already exists check for credentials
+                if(docs) {
+                    //If user exists check for password
+                    User.find({'email':email}, function(err, docs){
+                        //Match password
+                        if(docs[0].password == password) {
+                            //Update document
+                            User.update({"email" : email}, {"$set":{"email":email,"phone":phone,"full_name":full_name,"password":password}}, {upsert : false}, function(err, docs) {
+                                //Check for error while updating
+                                if(err) {
+                                    console.log(err);
+                                    //If error then return failure
+                                    helper.failure(res, next, 'Error while updating account', 200);
+                                } else {
+                                    helper.success(res, next, docs);
+                                }
+                            })
+                            console.log(docs)
+                        } else {
+                            helper.failure(res, next, 'Wrong username/password', 200);
+                        }
+                    });
+                } else {
+                    helper.failure(res, next, 'Wrong username/password', 200);
+                }
             }
         });
     });
