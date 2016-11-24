@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 var eventSchema = new Schema({
     title : String,
     description : String,
-    date : Date,
+    date : Number,
     venue : String,
     requirements : String,
     verified : Boolean,

@@ -31,7 +31,7 @@ module.exports = function(server) {
         var newEvent = new Event({
             title : req.params.title,
             description : req.params.description,
-            date : new Date(),
+            date : req.params.event_date,
             venue : req.params.venue,
             requirements : req.params.requirements,
             verified : false,
@@ -42,6 +42,8 @@ module.exports = function(server) {
             event_contacts : req.params.event_contacts,
             submitted_by : req.params.submitted_by
         });
+
+        console.log(newEvent);
 
         newEvent.save(function(err) {
             //Check if error inserting the data
