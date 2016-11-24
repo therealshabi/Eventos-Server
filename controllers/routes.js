@@ -236,6 +236,7 @@ module.exports = function(server) {
         var password = req.params.password;
         var full_name = req.params.full_name;
         var phone = req.params.phone;
+        var old_password = req.params.old_password;
 
         //Create new user
         var user = new User({
@@ -244,6 +245,8 @@ module.exports = function(server) {
             full_name : full_name,
             phone : phone
         });
+
+        console.log(old_password);
 
         //Check if email and password match
         User.count({'email':email}, function(err, docs){
@@ -256,7 +259,7 @@ module.exports = function(server) {
                     //If user exists check for password
                     User.find({'email':email}, function(err, docs){
                         //Match password
-                        if(docs[0].password == password) {
+                        if(docs[0].password == old_password) {
                             //Update document
                             User.update({"email" : email}, {"$set":{"email":email,"phone":phone,"full_name":full_name,"password":password}}, {upsert : false}, function(err, docs) {
                                 //Check for error while updating
