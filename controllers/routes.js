@@ -107,7 +107,7 @@ module.exports = function(server) {
         }
     });
 
-    //[POST] REQUEST TO RATE AND EVENT
+    //[POST] REQUEST TO RATE AN EVENT
     server.post('/api/events/rating/:id', function(req, res, next) {
         var rating = req.params.rating;
         var userId = req.params.user_id;
@@ -276,7 +276,7 @@ module.exports = function(server) {
                                 }
                             })
                             console.log(docs)
-                        } else {
+                        }    else {
                             helper.failure(res, next, 'Wrong username/password', 200);
                         }
                     });
