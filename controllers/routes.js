@@ -12,7 +12,7 @@ module.exports = function(server) {
     //[GET] REQUEST TO RESTURN ALL EVENTS
     server.get('/api/events', function(req, res, next) {
         //Get all the events from database and return
-        Event.find({}, null, {sort : {date : -1} }, function(err, docs) {
+        Event.find({"verified" : true}, null, {sort : {date : -1} }, function(err, docs) {
             //Check for error while reteriving data
             if(err) {
                 //If error then return failure
@@ -172,7 +172,8 @@ module.exports = function(server) {
                         email : req.params.email,
                         password : req.params.password,
                         phone : req.params.phone,
-                        full_name : full_name
+                        full_name : full_name,
+                        type : "user"
                     });
 
                     user.save(function(err){
@@ -192,6 +193,7 @@ module.exports = function(server) {
     server.post('/api/login', function(req, res, next){
         var email = req.params.email;
         var password = req.params.password;
+        console.log(req.connection.remoteAddress + " : Login request" );
 
         User.count({'email':email}, function(err, docs){
             if(err) {
@@ -287,5 +289,53 @@ module.exports = function(server) {
         });
     });
 
+    //[PUT] REQUEST TO VERIFY THE EVENT
+    server.put('/api/event/verify', function(req, res, next){
+        var event_id = req.params.event_id;
+        var verify = req.params.is_verified;
+
+        Event.findOne({ _id : event_id}, function(err, doc) {
+            //Check if there is no error while updating document
+            if(err) {
+                helper.failure(res, next, 'Error while verifying event', 404);
+            } else {
+                doc.verified = verify;
+                doc.save();
+                //Return success on changes being made
+                helper.success(res, next, 'Successfuly verified event');
+                console.log(doc)
+            }
+        });
+    });
+
+    //[GET] REQUEST TO RESTURN ALL EVENTS THAT ARE NOT VERIFIED
+    server.get('/api/unverified-events', function(req, res, next) {
+        //Get all the events from database and return
+        Event.find({"verified" : false}, null, {sort : {date : -1} }, function(err, docs) {
+            //Check for error while reteriving data
+            if(err) {
+                //If error then return failure
+                console.log(err);
+                helper.failure(res, next, 'Error while getting events.', 404);
+            } else {
+                //Return the data
+                console.log(req.connection.remoteAddress + " : Fetching unverified events");
+                helper.success(res, next, docs);
+            }
+        });
+    });
+
     //[DELETE] REQUEST TO DELETE AN EVENT
+    server.del('/api/event/:id', function(req, res, next) {
+        var event_id = req.params.id;
+        console.log(event_id);
+
+        Event.remove({ _id : event_id }, function(err, docs) {
+            if(err) {
+                helper.failure(res, next, 'Error while deleteing event', 404);
+            } else {
+                helper.success(res, next, docs);
+            }
+        });
+    });
 }

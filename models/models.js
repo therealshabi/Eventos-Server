@@ -25,7 +25,8 @@ var userSchema = new Schema({
     email : String,
     password : String,
     phone : String,
-    full_name : String
+    full_name : String,
+    type : String
 });
 
 var Event = mongoose.model('events', eventSchema);
