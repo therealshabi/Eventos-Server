@@ -338,4 +338,21 @@ module.exports = function(server) {
             }
         });
     });
+
+    //[GET] REQUEST TO GET ALL EVENTS
+    //[GET] REQUEST TO RESTURN ALL EVENTS
+    server.get('/api/all-events', function(req, res, next) {
+        //Get all the events from database and return
+        Event.find({}, null, {sort : {date : -1} }, function(err, docs) {
+            //Check for error while reteriving data
+            if(err) {
+                //If error then return failure
+                helper.failure(res, next, 'Error while getting events.', 404);
+            } else {
+                //Return the data
+                console.log(req.connection.remoteAddress + " : Fetching all events");
+                helper.success(res, next, docs);
+            }
+        });
+    });
 }
