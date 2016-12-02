@@ -12,7 +12,7 @@ var eventSchema = new Schema({
     verified : Boolean,
     comments : [],
     rating : [],
-    avatar_id : Number,
+    avatar_id : String,
     event_contacts : [],
     people_interested : Number,
     image : String,
