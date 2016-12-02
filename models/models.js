@@ -18,7 +18,8 @@ var eventSchema = new Schema({
     image : String,
     attendies : [],
     event_links : [],
-    submitted_by : String
+    submitted_by : String,
+    outside_event : Boolean
 });
 
 var userSchema = new Schema({

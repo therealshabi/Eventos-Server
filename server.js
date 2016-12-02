@@ -15,6 +15,6 @@ setupController(server, restify);
 //Set routes on server
 routes(server);
 
-server.listen(8080, '192.168.43.55', function(){
+server.listen(55555, '192.168.0.7', function(){
     console.log("Server Started..");
 });

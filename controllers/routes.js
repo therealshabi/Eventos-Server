@@ -9,10 +9,27 @@ var User = models.User;
 module.exports = function(server) {
     //[GET, POST, PUT, DELETE] routes defined here
 
-    //[GET] REQUEST TO RESTURN ALL EVENTS
+    //[GET] REQUEST TO RETURN ALL EVENTS
     server.get('/api/events', function(req, res, next) {
         //Get all the events from database and return
-        Event.find({"verified" : true}, null, {sort : {date : -1} }, function(err, docs) {
+        Event.find({"verified" : true, "outside_event" : false}, null, {sort : {date : -1} }, function(err, docs) {
+            //Check for error while reteriving data
+            if(err) {
+                //If error then return failure
+                helper.failure(res, next, 'Error while getting events.', 404);
+            } else {
+                //Return the data
+                console.log(req.connection.remoteAddress + " : Fetching events");
+                helper.success(res, next, docs);
+            }
+        });
+    });
+
+
+    //[GET] REQUEST TO RETURN ALL OUTSIDE EVENTS
+    server.get('/api/outside_events', function(req, res, next) {
+        //Get all the events from database and return
+        Event.find({"verified" : true, "outside_event" : true}, null, {sort : {date : -1} }, function(err, docs) {
             //Check for error while reteriving data
             if(err) {
                 //If error then return failure
@@ -40,7 +57,8 @@ module.exports = function(server) {
             avatar_id : req.params.avatar_id,
             event_links : req.params.event_links,
             event_contacts : req.params.event_contacts,
-            submitted_by : req.params.submitted_by
+            submitted_by : req.params.submitted_by,
+            outside_event : req.params.outside_event
         });
 
         console.log(newEvent);
@@ -108,15 +126,16 @@ module.exports = function(server) {
     });
 
     //[POST] REQUEST TO RATE AN EVENT
-    server.post('/api/events/rating/:id', function(req, res, next) {
+    server.post('/api/events/rating', function(req, res, next) {
+        var eventId = req.params.event_id;
         var rating = req.params.rating;
         var userId = req.params.user_id;
         //Check if fields are not empty
-        if(rating == null || userId == null) {
+        if(rating == null || userId == null || eventId==null) {
             helper.failure(res, next, 'Rating/Id cannot be empty', 404);
         } else {
             //Retrieve particular event from database
-            Event.findByIdAndUpdate(req.params.id, { $push : { "rating" : { "user_id" : userId, "rating" : rating} } }, function(err, doc) {
+            Event.findByIdAndUpdate(eventId, { "rating" :  { "user_id" : userId, "rating" : rating} }, function(err, doc) {
                 //Check if error while reteriving the database
                 if(err) {
                     //Return failure if error while updatin
@@ -340,7 +359,7 @@ module.exports = function(server) {
     });
 
     //[GET] REQUEST TO GET ALL EVENTS
-    //[GET] REQUEST TO RESTURN ALL EVENTS
+    //[GET] REQUEST TO RETURN ALL EVENTS
     server.get('/api/all-events', function(req, res, next) {
         //Get all the events from database and return
         Event.find({}, null, {sort : {date : -1} }, function(err, docs) {
